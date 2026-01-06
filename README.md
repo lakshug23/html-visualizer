@@ -4,13 +4,6 @@ An interactive HTML Structure Visualizer that turns raw HTML into colorful neste
 
 ---
 
-## Demo
-
-- Live demo: (add your deployed URL here, e.g. https://yourusername.github.io/html-visualizer)
-- Repository: https://github.com/yourusername/html-visualizer
-
----
-
 ## Features
 
 - **Visual DOM tree**
@@ -35,15 +28,11 @@ An interactive HTML Structure Visualizer that turns raw HTML into colorful neste
 
 The following screenshots are stored in the project root and referenced directly:
 
-(./Screenshot%202026-01-06%20at%2010.17.57%E2%80%AFPM.png)
 
-
-(./Screenshot%202026-01-06%20at%2010.18.22%E2%80%AFPM.png)
-
-(./Screenshot%202026-01-06%20at%2010.18.29%E2%80%AFPM.png)
-
-
-(./Screenshot%202026-01-06%20at%2010.18.36%E2%80%AFPM.png)
+![](./Screenshot%202026-01-06%20at%2010.17.57%E2%80%AFPM.png)
+![](./Screenshot%202026-01-06%20at%2010.18.22%E2%80%AFPM.png)
+![](./Screenshot%202026-01-06%20at%2010.18.29%E2%80%AFPM.png)
+![](./Screenshot%202026-01-06%20at%2010.18.36%E2%80%AFPM.png)
 
 ---
 
