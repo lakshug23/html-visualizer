@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Structure Visualizer | Learn HTML</title>
+<meta name="description" content="Visualize your HTML code structure with colorful interactive boxes. Learn HTML semantics and attributes with tooltips.">
+<meta name="keywords" content="HTML visualizer, HTML tutorial, learn HTML, HTML structure, HTML attributes">
+<meta name="author" content="Your Name">
+
+<!-- Open Graph / Social Sharing -->
+<meta property="og:title" content="HTML Structure Visualizer">
+<meta property="og:description" content="Learn HTML with interactive visualization of code, attributes, and children.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="link-to-image.png">
+<meta property="og:url" content="https://your-site.com">
+
+<!-- Favicon -->
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #000;
+  color: #fff;
+}
+
+.page {
+  display: none;
+  padding: 24px;
+}
+
+.page.active {
+  display: block;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e5e7eb;
+}
+
+/* INPUT */
+textarea {
+  width: 100%;
+  height: 240px;
+  font-family: monospace;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #0a0a0a;
+  color: #fff;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 26px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #00f5d4;
+  color: #000;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 22px #00f5d4;
+}
+
+/* BOXES */
+.box {
+  border-radius: 14px;
+  padding: 12px;
+  margin: 16px 0;
+  border: 2px solid rgba(255,255,255,0.15);
+  position: relative;
+  transition: box-shadow 0.3s;
+}
+
+.box:hover {
+  box-shadow: 0 0 32px currentColor;
+}
+
+/* Tooltip for insights */
+.box::after {
+  content: attr(data-info);
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  white-space: pre-wrap;
+  z-index: 10;
+  max-width: 400px;
+}
+
+.box:hover::after {
+  opacity: 1;
+}
+
+/* Child indentation */
+.child {
+  margin-left: 28px;
+}
+
+/* Box Colors */
+.html-box { background: #ff595e; }
+.head-box { background: #1982c4; }
+.body-box { background: #8ac926; }
+.heading-box { background: #ffca3a; color: #000; }
+.text-box { background: #ffd6a5; color: #000; }
+.default-box { background: #c77dff; }
+
+/* CODE */
+.code {
+  font-family: monospace;
+  background: rgba(0,0,0,0.6);
+  padding: 6px 8px;
+  border-radius: 8px;
+  margin: 5px 0;
+  white-space: pre-wrap;
+}
+
+.tag  { color: #00e5ff; }
+.attr { color: #ffd166; }
+.text { color: #ffffff; }
+
+@media (max-width: 600px) {
+  textarea {
+    height: 180px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- INPUT PAGE -->
+<div class="page active" id="inputPage">
+  <h1>HTML Code Input</h1>
+  <textarea id="htmlInput" placeholder="Paste your HTML code here..."></textarea>
+  <button onclick="visualize()">Visualize</button>
+</div>
+
+<!-- VISUALIZATION PAGE -->
+<div class="page" id="visualPage">
+  <h1>HTML Structure Visualization</h1>
+  <main id="visualization"></main>
+  <button onclick="goBack()">Back</button>
+</div>
+
+<script>
+// High-level insights dictionary
+const insights = {
+  "html": "The root element of the document. Contains <head> and <body>.",
+  "head": "Contains metadata, links to stylesheets, scripts, and other resources.",
+  "body": "Contains the main visible content of the webpage.",
+  "title": "Specifies the title of the document displayed in the browser tab.",
+  "h1": "Top-level heading, represents the main section heading.",
+  "h2": "Secondary heading, represents a subsection heading.",
+  "h3": "Tertiary heading for further subsections.",
+  "p": "Paragraph of text.",
+  "div": "Generic container for grouping other elements.",
+  "span": "Inline container used for styling text or grouping.",
+  "a": "Hyperlink to navigate to another page or section.",
+  "img": "Displays an image.",
+  "ul": "Unordered list of items.",
+  "ol": "Ordered list of items.",
+  "li": "List item inside a list (<ul> or <ol>).",
+  "script": "Contains or links to JavaScript code.",
+  "link": "References external resources, usually stylesheets.",
+  "meta": "Metadata about the document, such as charset or description.",
+  "form": "Container for user input elements.",
+  "input": "Field for user input inside a form.",
+  "button": "Clickable button for user actions."
+};
+
+function visualize() {
+  const input = document.getElementById("htmlInput").value.trim();
+  if (!input) {
+    alert("Please paste HTML code.");
+    return;
+  }
+
+  document.getElementById("inputPage").classList.remove("active");
+  document.getElementById("visualPage").classList.add("active");
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(input, "text/html");
+
+  const container = document.getElementById("visualization");
+  container.innerHTML = "";
+  container.appendChild(renderElement(doc.documentElement));
+}
+
+function goBack() {
+  document.getElementById("visualPage").classList.remove("active");
+  document.getElementById("inputPage").classList.add("active");
+}
+
+function renderElement(el) {
+  if (el.nodeType !== 1) return document.createTextNode("");
+
+  const box = document.createElement("div");
+  box.className = `box ${getBoxClass(el.tagName)}`;
+
+  // High-level insight tooltip
+  const tagName = el.tagName.toLowerCase();
+  const attrList = [...el.attributes].map(a => `${a.name}="${a.value}"`).join(", ");
+  const childCount = el.children.length;
+  const semantic = insights[tagName] || "Generic HTML element.";
+  box.setAttribute("data-info", `${semantic}\nAttrs: ${attrList || "none"}\nChildren: ${childCount}`);
+
+  // Open tag
+  const open = document.createElement("div");
+  open.className = "code";
+  open.innerHTML =
+    `<span class="tag">&lt;${el.tagName.toLowerCase()}</span>` +
+    renderAttrs(el) +
+    `<span class="tag">&gt;</span>`;
+  box.appendChild(open);
+
+  // Children
+  el.childNodes.forEach(node => {
+    if (node.nodeType === 3 && node.textContent.trim()) {
+      const text = document.createElement("div");
+      text.className = "code text";
+      text.textContent = node.textContent.trim();
+      box.appendChild(text);
+    }
+    if (node.nodeType === 1) {
+      const child = renderElement(node);
+      child.classList.add("child");
+      box.appendChild(child);
+    }
+  });
+
+  // Close tag
+  const close = document.createElement("div");
+  close.className = "code";
+  close.innerHTML =
+    `<span class="tag">&lt;/${el.tagName.toLowerCase()}&gt;</span>`;
+  box.appendChild(close);
+
+  return box;
+}
+
+function renderAttrs(el) {
+  let out = "";
+  for (let attr of el.attributes) {
+    out += ` <span class="attr">${attr.name}="${attr.value}"</span>`;
+  }
+  return out;
+}
+
+function getBoxClass(tag) {
+  tag = tag.toLowerCase();
+  if (tag === "html") return "html-box";
+  if (tag === "head") return "head-box";
+  if (tag === "body") return "body-box";
+  if (tag.startsWith("h")) return "heading-box";
+  if (tag === "p") return "text-box";
+  return "default-box";
+}
+</script>
+
+</body>
+</html>
